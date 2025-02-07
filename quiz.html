@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz Sommeil de Bébé – Avec Sous‐Titre & Image</title>
+  <title>Quiz avec Image dimensionnable</title>
   <style>
     /* =========== STYLE MINIMALISTE + FLEX POUR L'IMAGE =========== */
     body {
@@ -20,13 +20,11 @@
       align-items: flex-start; /* aligne le haut de l'image et du contenu */
     }
     .slide-content {
-      flex: 1; 
+      flex: 1; /* le contenu texte prend la place disponible */
     }
     .slide-image {
-      margin-left: 20px; 
-      max-width: 200px;  
-      max-height: 200px; 
-      object-fit: cover; 
+      margin-left: 20px;
+      object-fit: cover;
     }
 
     .nav-buttons {
@@ -44,10 +42,10 @@
       opacity: 0.8;
     }
     .btn-validate {
-      background-color: #28a745; 
+      background-color: #28a745;
     }
     .btn-back {
-      background-color: #6c757d; 
+      background-color: #6c757d;
     }
     .btn-next {
       background-color: #007bff;
@@ -81,29 +79,29 @@
   </style>
 </head>
 <body>
-  
+
   <div id="quiz-container"></div>
 
   <script>
     /**************************************************************
      * CONFIGURATION DU QUIZ
-     * Si vous voulez un sous‐titre, ajoutez "subtitle": "..."
-     * Si vous voulez une image, ajoutez "image": "URL..."
+     * "imageWidth" et "imageHeight" pour ajuster la taille
      **************************************************************/
     const quizConfig = {
       slides: [
         {
           type: "intro",
           title: "Bienvenue dans le Quiz",
-          subtitle: "Sous‐titre de la page d'introduction", /* exemple de sous‐titre */
+          subtitle: "Sous‐titre (facultatif)",
           content: "Découvrez les bases du sommeil de bébé...",
-          image: "livre-sommeil.jpg"
+          image: "livre-sommeil.jpg",
+          imageWidth: "500px",
+          imageHeight: "300px"
         },
         {
           type: "question",
           id: 1,
           title: "Question 1 : Le sommeil agité",
-          // Pas de sous‐titre ici, c'est optionnel
           question: "Pourquoi les parents confondent‐ils souvent le sommeil agité avec un réveil ?",
           answers: [
             { text: "Car bébé émet des sons et des mimiques", isCorrect: true },
@@ -111,20 +109,20 @@
             { text: "Car bébé dort profondément", isCorrect: false },
             { text: "Car bébé ne bouge pas", isCorrect: false }
           ],
-          image: "https://via.placeholder.com/200x150?text=Question1"
+          image: "https://via.placeholder.com/300x200?text=Question+1",
+          imageWidth: "250px"
         },
         {
           type: "promo",
           title: "Page promo : Nos ateliers en ligne",
-          subtitle: "Sous‐titre promo pour intriguer",
+          subtitle: "Sous‐titre promo",
           content: "Bénéficiez d'une séance gratuite pour aller plus loin !",
           actions: [
             {
               label: "Je m'abonne à la newsletter",
               element: "button",
-              actionType: "link",
-              url: "https://boutique.la-voie-des-parents.fr/newsletter",
-              target: "_blank"
+              actionType: "callback",
+              functionName: "subscribeNewsletter"
             },
             {
               label: "Visiter notre site",
@@ -134,7 +132,9 @@
               target: "_blank"
             }
           ],
-          image: "https://via.placeholder.com/200x150?text=Promo"
+          image: "https://via.placeholder.com/200x250?text=Promo",
+          imageWidth: "200px",
+          imageHeight: "250px"
         },
         {
           type: "question",
@@ -150,22 +150,24 @@
         },
         {
           type: "promo",
-          title: "Votre diagnostic offert",
-          content: "Nous vous offrons un diagnostic blablabla."
+          title: "Ateliers pratiques",
+          content: "Inscrivez‐vous à nos ateliers pratiques sur le sommeil de bébé."
         },
         {
           type: "question",
           id: 3,
           title: "Question 3 : Les cycles de sommeil",
-          subtitle: "Un sous‐titre question 3",
+          subtitle: "Sous‐titre question 3",
           question: "À quel âge commence à se mettre en place un véritable cycle de sommeil jour/nuit ?",
           answers: [
             { text: "Dès la naissance", isCorrect: false },
-            { text: "Vers 2‐3 mois", isCorrect: false },
-            { text: "Vers 4‐6 mois", isCorrect: true },
-            { text: "Vers 1 an", isCorrect: false }
+            { text: "Vers 2‐3 mois",    isCorrect: false },
+            { text: "Vers 4‐6 mois",    isCorrect: true  },
+            { text: "Vers 1 an",        isCorrect: false }
           ],
-          image: "https://via.placeholder.com/200x150?text=Question3"
+          image: "https://via.placeholder.com/320x200?text=Question+3",
+          imageWidth: "150px"
+          // on n'a pas mis imageHeight, ça restera auto
         },
         {
           type: "result"
@@ -241,6 +243,15 @@
         imageEl.src = slide.image;
         imageEl.alt = "Illustration";
         imageEl.className = 'slide-image';
+
+        // Application dynamique de la taille
+        if (slide.imageWidth) {
+          imageEl.style.width = slide.imageWidth;
+        }
+        if (slide.imageHeight) {
+          imageEl.style.height = slide.imageHeight;
+        }
+
         slideDiv.appendChild(imageEl);
       }
 
@@ -262,8 +273,7 @@
               contentDiv.appendChild(subtitleEl);
             }
 
-            // Pour un question, un promo, ou un intro, on ajoute un texte principal
-            // Dans "question", on a `slide.question`, dans "promo"/"intro", on a `slide.content`.
+            // Si c'est une question
             if (slide.type === 'question') {
               const questionP = document.createElement('p');
               questionP.textContent = slide.question;
